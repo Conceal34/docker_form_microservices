@@ -27,22 +27,49 @@ app.get('/form', async (req, res) => {
 
 app.post('/submit', async (req, res) => {
     // redirect to the backend service to process the form data
-    // try {
-    //     const response = await fetch(`${BACKEND_URL}/insertData`, {
-    //         method: 'POST',
-    //         headers: { 'Content-Type': 'application/json' },
-    //         body: JSON.stringify(req.body)
-    //     });
-    //     if (!response.ok) {
-    //         throw new Error('Failed to process form data');
-    //     }
-    // }
-    // catch (error) {
-    //     console.error('Error processing form data:', error);
-    //     return res.render('form_failure');
-    // }
+    try {
+        const response = await fetch(`${BACKEND_URL}/insertData`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(
+                {
+                    name: req.body.name,
+                    email: req.body.email
+                }
+            )
+        });
+        if (!response.ok) {
+            throw new Error('Failed to process form data');
+        }
+    }
+    catch (error) {
+        console.error('Error processing form data:', error);
+        res.render('form_failure');
+    }
 
-    res.render('form_success', { name: req.body.name, email: req.body.email });
+    res.redirect('/success');
+});
+
+app.get('/success', async (req, res) => {
+    // enter the ejs variables
+    try {
+        const response = await fetch(`${BACKEND_URL}/getData`, {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json' }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to retrieve data');
+        }
+
+        const data = await response.json();
+        let dataName = data.name;
+        let email = data.email;
+        res.render('form_success', { name: dataName, email: email });
+    }
+    catch (error) {
+        console.error('Error retrieving data:', error);
+        res.render('form_failure');
+    }
 });
 
 app.listen(3000, () => {
