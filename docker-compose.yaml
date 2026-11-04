@@ -19,12 +19,11 @@ services:
       - ./frontend:/app
     ports:
       - "3000:3000"
-    links: 
-      - backend
-    depends_on:
-      - backend
     networks:
       - app-network
+    depends_on:
+      - backend
 
 networks:
-  app-network: {}
+  app-network:
+   driver: bridge
