@@ -1,11 +1,14 @@
-FROM node:22-alpine3.22
 
-ADD . /app
+FROM node:22-alpine
 
 WORKDIR /app
 
-RUN npm install
+COPY package*.json ./
 
-ENTRYPOINT [ "node" ]
+RUN npm install --omit=dev
 
-CMD [ "index.js" ]
+COPY . .
+
+EXPOSE 3000
+
+CMD ["node", "index.js"]
